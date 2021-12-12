@@ -3,13 +3,16 @@ package com.google;
 import com.google.util.ReadFileUtil;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class Day4 {
 
     public static void main(String[] args) throws IOException {
-        var file = "/home/stefan/Desktop/advent-of-code/4/inputd";
+        var file = "/home/stefan/Desktop/advent-of-code/4/input";
 
         var lines = ReadFileUtil.readLinesFrom(file);
 
@@ -19,7 +22,7 @@ public class Day4 {
         for (var guess : guesses) {
             players.forEach(p -> p.mark(guess));
 
-            if (players.size() == 1) {
+            if (players.size() == 1 && players.get(0).isBingo()) {
                 var winner = players.get(0);
                 var sum = winner.getSum();
                 System.out.println(sum * guess);
