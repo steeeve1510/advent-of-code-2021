@@ -1,17 +1,17 @@
 package com.google;
 
-import java.io.*;
+import com.google.util.ReadFileUtil;
+
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class Application {
+public class Day1 {
 
     public static void main(String[] args) throws IOException {
-        InputStream inputStream = new FileInputStream(new File("/home/stefan/Desktop/advent-of-code/1/input2"));
-        String data = readFromInputStream(inputStream);
+        var file = "/home/stefan/Desktop/advent-of-code/1/input2";
 
-        List<Long> measurements = Arrays.stream(data.split("\n"))
+        List<Long> measurements = ReadFileUtil.readLinesFrom(file).stream()
                 .map(Long::parseLong)
                 .toList();
 
@@ -37,14 +37,4 @@ public class Application {
         System.out.println(counter);
     }
 
-    private static String readFromInputStream(InputStream inputStream) throws IOException {
-        StringBuilder resultStringBuilder = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                resultStringBuilder.append(line).append("\n");
-            }
-        }
-        return resultStringBuilder.toString();
-    }
 }
