@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 public class Day4 {
 
     public static void main(String[] args) throws IOException {
-        var file = "/home/stefan/Desktop/advent-of-code/4/input";
+        var file = "/home/stefan/Desktop/advent-of-code/4/inputd";
 
         var lines = ReadFileUtil.readLinesFrom(file);
 
@@ -17,19 +17,21 @@ public class Day4 {
         for (var guess : guesses) {
             players.forEach(p -> p.mark(guess));
 
-            var winners = players.stream()
-                    .filter(Player::isBingo)
-                    .toList();
-
-            if (winners.size() > 1) {
-                throw new RuntimeException("Dafuq " + winners.size());
-            }
-            if (winners.size() == 1) {
-                var winner = winners.get(0);
+            if (players.size() == 1) {
+                var winner = players.get(0);
                 var sum = winner.getSum();
                 System.out.println(sum * guess);
                 break;
             }
+
+            players = players.stream()
+                    .filter(p -> !p.isBingo())
+                    .toList();
+
+            if (players.size() == 0) {
+                throw new RuntimeException("Dafuq");
+            }
+
         }
     }
 
