@@ -1,27 +1,37 @@
 package com.google;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Application {
 
     public static void main(String[] args) throws IOException {
-        InputStream inputStream = new FileInputStream(new File("/home/stefan/Desktop/advent-of-code/1/input"));
+        InputStream inputStream = new FileInputStream(new File("/home/stefan/Desktop/advent-of-code/1/input2"));
         String data = readFromInputStream(inputStream);
 
         List<Long> measurements = Arrays.stream(data.split("\n"))
                 .map(Long::parseLong)
-                .collect(Collectors.toList());
+                .toList();
+
+        List<Long> sums = new ArrayList<>();
+        for (var i = 0; i < measurements.size() - 2; i++) {
+            var first = measurements.get(i);
+            var second = measurements.get(i + 1);
+            var third = measurements.get(i + 2);
+
+            var sum = first + second + third;
+            sums.add(sum);
+        }
 
         long counter = 0;
         long previous = Long.MAX_VALUE;
-        for (var m : measurements) {
-            if (m > previous) {
+        for (var s : sums) {
+            if (s > previous) {
                 counter++;
             }
-            previous = m;
+            previous = s;
         }
 
         System.out.println(counter);
