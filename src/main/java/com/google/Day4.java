@@ -1,4 +1,6 @@
-package com.google.util;
+package com.google;
+
+import com.google.util.ReadFileUtil;
 
 import java.io.IOException;
 import java.util.*;
