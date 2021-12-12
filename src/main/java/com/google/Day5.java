@@ -47,23 +47,30 @@ public class Day5 {
         var yDiff = b.y() - a.y();
         if (xDiff == 0) {
             var x = a.x();
-            return getIntStream(b.y(), a.y())
+            return getIntStream(a.y(), b.y())
                     .mapToObj(y -> new Point(x, y))
                     .toList();
         } else if (yDiff == 0) {
             var y = a.y();
-            return getIntStream(b.x(), a.x())
+            return getIntStream(a.x(), b.x())
                     .mapToObj(x -> new Point(x, y))
                     .toList();
+        } else {
+            var xStream = getIntStream(a.x(), b.x()).boxed().toList();
+            var yStream = getIntStream(a.y(), b.y()).boxed().toList();
+
+            return IntStream.range(0, xStream.size())
+                    .mapToObj(i -> new Point(xStream.get(i), yStream.get(i)))
+                    .toList();
         }
-        return List.of();
     }
 
     private static IntStream getIntStream(int a, int b) {
         if (a < b) {
             return IntStream.rangeClosed(a, b);
         } else {
-            return IntStream.rangeClosed(b, a);
+            return IntStream.rangeClosed(b, a)
+                    .map(i -> b - i + a);
         }
     }
 
