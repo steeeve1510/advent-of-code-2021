@@ -6,8 +6,10 @@ import lombok.Data;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public class Day6 {
 
@@ -18,15 +20,37 @@ public class Day6 {
 
         var lanternFishes = parse(lines.get(0));
 
-        var days = 80;
+        var days = 256;
 
-        for (int i = 0; i < days; i++) {
+        var simulation = simulate(days);
+
+        long count = lanternFishes.stream()
+                .map(l -> simulation.get(days - l.timer))
+                .reduce(0L, Long::sum);
+
+        System.out.println(count);
+    }
+
+    private static Map<Integer, Long> simulate(int days) {
+        Map<Integer, Long> simulation = new HashMap<>();
+        var lanternFishes = List.of(new LanternFish(0));
+
+        for (int i = 0; i < days / 2; i++) {
+            simulation.put(i, (long) lanternFishes.size());
             lanternFishes = lanternFishes.stream()
-                    .flatMap(f -> f.breed().stream())
-                    .collect(Collectors.toList());
+                    .flatMap(LanternFish::breed)
+                    .toList();
         }
 
-        System.out.println(lanternFishes.size());
+        for (int i = 0; i < days / 2; i++) {
+            int finalI = i;
+            long count = lanternFishes.stream()
+                    .map(l -> simulation.getOrDefault(finalI - l.timer, 1L))
+                    .reduce(0L, Long::sum);
+            simulation.put(days / 2 + i, count);
+        }
+
+        return simulation;
     }
 
     private static List<LanternFish> parse(String line) {
@@ -42,14 +66,14 @@ public class Day6 {
 
         private int timer;
 
-        public List<LanternFish> breed() {
+        public Stream<LanternFish> breed() {
             if (timer > 0) {
                 timer--;
-                return List.of(this);
+                return Stream.of(this);
             }
 
             timer = 6;
-            return List.of(this, new LanternFish(8));
+            return Stream.of(this, new LanternFish(8));
         }
     }
 }
