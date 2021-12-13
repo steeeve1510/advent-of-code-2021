@@ -1,13 +1,18 @@
 package com.google.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
 public class ReadFileUtil {
 
     public static List<String> readLinesFrom(String file) throws IOException {
-        InputStream inputStream = new FileInputStream(file);
+        Class<ReadFileUtil> clazz = ReadFileUtil.class;
+        InputStream inputStream = clazz.getResourceAsStream(file);
+
         String data = readFromInputStream(inputStream);
 
         return Arrays.asList(data.split("\n"));

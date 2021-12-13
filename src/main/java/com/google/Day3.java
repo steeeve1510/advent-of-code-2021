@@ -11,7 +11,7 @@ public class Day3 {
     private static int numberOfDigits = 12;
 
     public static void main(String[] args) throws IOException {
-        var file = "/home/stefan/Desktop/advent-of-code/3/input2";
+        var file = "/3/input2";
 
         List<String> lines = ReadFileUtil.readLinesFrom(file);
 

@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 public class Day4 {
 
     public static void main(String[] args) throws IOException {
-        var file = "/home/stefan/Desktop/advent-of-code/4/input";
+        var file = "/4/input";
 
         var lines = ReadFileUtil.readLinesFrom(file);
 

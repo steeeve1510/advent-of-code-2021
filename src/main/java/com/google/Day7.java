@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 public class Day7 {
 
     public static void main(String[] args) throws IOException {
-        var file = "/home/stefan/Desktop/advent-of-code/7/input";
+        var file = "/7/input";
 
         var lines = ReadFileUtil.readLinesFrom(file);
 

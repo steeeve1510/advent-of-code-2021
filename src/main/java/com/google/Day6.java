@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public class Day6 {
 
     public static void main(String[] args) throws IOException {
-        var file = "/home/stefan/Desktop/advent-of-code/6/input";
+        var file = "/6/input";
 
         var lines = ReadFileUtil.readLinesFrom(file);
 

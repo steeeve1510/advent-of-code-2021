@@ -8,7 +8,7 @@ import java.util.List;
 public class Day2 {
 
     public static void main(String[] args) throws IOException {
-        var file = "/home/stefan/Desktop/advent-of-code/2/input2";
+        var file = "/2/input2";
 
         List<DirectionChange> changes = ReadFileUtil.readLinesFrom(file).stream()
                 .map(DirectionChange::parse)

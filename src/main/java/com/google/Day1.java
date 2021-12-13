@@ -9,7 +9,7 @@ import java.util.List;
 public class Day1 {
 
     public static void main(String[] args) throws IOException {
-        var file = "/home/stefan/Desktop/advent-of-code/1/input2";
+        var file = "/1/input2";
 
         List<Long> measurements = ReadFileUtil.readLinesFrom(file).stream()
                 .map(Long::parseLong)
