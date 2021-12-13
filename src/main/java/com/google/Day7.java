@@ -39,7 +39,10 @@ public class Day7 {
     private record Crabs(List<Integer> positions) {
         public int getFuel(int alignment) {
             return positions.stream()
-                    .map(p -> Math.abs(p - alignment))
+                    .map(p -> {
+                        var n = Math.abs(p - alignment);
+                        return n * (n + 1) / 2;
+                    })
                     .reduce(0, Integer::sum);
         }
     }
