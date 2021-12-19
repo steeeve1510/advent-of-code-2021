@@ -3,10 +3,7 @@ package com.google;
 import com.google.util.ReadFileUtil;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -26,7 +23,7 @@ public class Day8 {
                 .map(Assignment::new)
                 .toList();
 
-        var counter = 0;
+        var sum = 0L;
         for (var lcd : lcds) {
             var validAssignments = assignments.stream()
                     .filter(a -> lcd.all().stream().allMatch(a::isValidNumber))
@@ -35,13 +32,13 @@ public class Day8 {
                 throw new RuntimeException("Dafuq");
             }
             var assignment = validAssignments.get(0);
-            var correctNumbers = lcd.output().stream()
+            var number = lcd.output().stream()
                     .map(assignment::getNumber)
-                    .filter(n -> List.of(1, 4, 7, 8).contains(n))
-                    .count();
-            counter += correctNumbers;
+                    .filter(Objects::nonNull)
+                    .reduce(0, (a, b) -> a * 10 + b);
+            sum += number;
         }
-        System.out.println(counter);
+        System.out.println(sum);
     }
 
     private static LCD parse(String line) {
