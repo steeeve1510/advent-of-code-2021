@@ -3,13 +3,15 @@ package com.google;
 import com.google.util.ReadFileUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Day9 {
-
-    private static final List<String> characters = List.of("a", "b", "c", "d", "e", "f", "g");
 
     public static void main(String[] args) throws IOException {
         var file = "/9/input";
@@ -18,38 +20,55 @@ public class Day9 {
 
         var map = parse(lines);
 
-        List<Integer> lowPoints = new ArrayList<>();
+        var basins = new HashMap<Field, Integer>();
         for (int y = 0; y < map.getHeight(); y++) {
             for (int x = 0; x < map.getWidth(); x++) {
-                var current = map.get(x, y);
-                var up = map.getUp(x, y);
-                var right = map.getRight(x, y);
-                var down = map.getDown(x, y);
-                var left = map.getLeft(x, y);
-
-                if (current == null) {
+                var field = new Field(x, y);
+                var elevation = map.getElevation(field);
+                if (elevation >= 9) {
                     continue;
                 }
-                if (up != null && up <= current) {
-                    continue;
-                }
-                if (right != null && right <= current) {
-                    continue;
-                }
-                if (down != null && down <= current) {
-                    continue;
-                }
-                if (left != null && left <= current) {
-                    continue;
-                }
-                lowPoints.add(current);
+                var lowest = floatDown(field, map);
+                basins.putIfAbsent(lowest, 0);
+                basins.computeIfPresent(lowest, (k, v) -> v + 1);
             }
         }
 
-        var risk = lowPoints.stream()
-                .map(p -> p + 1)
-                .reduce(0, Integer::sum);
-        System.out.println(risk);
+        Comparator<java.util.Map.Entry<Field, Integer>> comparator = java.util.Map.Entry.comparingByValue();
+        var sum = basins.entrySet().stream()
+                .sorted(comparator.reversed())
+                .limit(3)
+                .map(java.util.Map.Entry::getValue)
+                .reduce(1, (v1, v2) -> v1 * v2);
+        System.out.println(sum);
+    }
+
+    private static Field floatDown(Field field, Map map) {
+        Field current = field;
+        Field prev = null;
+
+        while (!current.equals(prev)) {
+            prev = current;
+            current = floatStep(current, map);
+        }
+        return current;
+    }
+
+    private static Field floatStep(Field field, Map map) {
+        var heightMap = Stream.of(
+                        field,
+                        field.getUp(),
+                        field.getRight(),
+                        field.getDown(),
+                        field.getLeft()
+                )
+                .filter(map::isInBounds)
+                .collect(Collectors.toMap(Function.identity(), map::getElevation));
+
+        return heightMap.entrySet().stream()
+                .min(Comparator.comparingInt(java.util.Map.Entry::getValue))
+                .map(java.util.Map.Entry::getKey)
+                .orElse(null);
     }
 
     private static Map parse(List<String> lines) {
@@ -66,37 +85,49 @@ public class Day9 {
         return new Map(field);
     }
 
-    private record Map(List<List<Integer>> field) {
+    private record Map(List<List<Integer>> fields) {
 
         public int getWidth() {
-            return field.get(0).size();
+            return fields.get(0).size();
         }
 
         public int getHeight() {
-            return field.size();
+            return fields.size();
         }
 
-        public Integer get(int x, int y) {
+        public boolean isInBounds(Field field) {
+            var x = field.x();
+            var y = field.y();
+            return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
+        }
+
+        public Integer getElevation(Field field) {
+            return getElevation(field.x(), field.y());
+        }
+
+        public Integer getElevation(int x, int y) {
             if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight()) {
                 return null;
             }
-            return field.get(y).get(x);
+            return fields.get(y).get(x);
+        }
+    }
+
+    private record Field(int x, int y) {
+        public Field getUp() {
+            return new Field(x, y - 1);
         }
 
-        public Integer getUp(int x, int y) {
-            return get(x, y - 1);
+        public Field getRight() {
+            return new Field(x + 1, y);
         }
 
-        public Integer getRight(int x, int y) {
-            return get(x + 1, y);
+        public Field getDown() {
+            return new Field(x, y + 1);
         }
 
-        public Integer getDown(int x, int y) {
-            return get(x, y + 1);
-        }
-
-        public Integer getLeft(int x, int y) {
-            return get(x - 1, y);
+        public Field getLeft() {
+            return new Field(x - 1, y);
         }
     }
 }
