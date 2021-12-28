@@ -22,12 +22,17 @@ public class Day11 {
         var lines = ReadFileUtil.readLinesFrom(file);
 
         var grid = parse(lines);
+        var size = grid.size();
 
-        var count = IntStream.range(0, 100)
-                .mapToObj((i) -> grid.energize())
-                .reduce(0L, Long::sum);
-
-        System.out.println(count);
+        var i = 0L;
+        while (true) {
+            i++;
+            var flashes = grid.energize();
+            if (size == flashes) {
+                System.out.println(i);
+                break;
+            }
+        }
     }
 
     private static Grid parse(List<String> lines) {
@@ -107,6 +112,12 @@ public class Day11 {
                             .collect(Collectors.joining(""))
                     )
                     .collect(Collectors.joining("\n"));
+        }
+
+        public long size() {
+            return octopi.stream()
+                    .mapToLong(Collection::size)
+                    .sum();
         }
     }
 
