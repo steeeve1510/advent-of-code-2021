@@ -117,15 +117,26 @@ public class Day12 {
         }
 
         private boolean isValid() {
-            return caves.stream()
+            var smallCaveVisits = caves.stream()
                     .filter(Cave::isSmall)
                     .collect(Collectors.toMap(
                             Cave::getId,
                             (c) -> 1,
                             Integer::sum
-                    ))
-                    .values().stream()
-                    .allMatch(i -> i == 1);
+                    ));
+
+            var twiceVisits = smallCaveVisits.values().stream()
+                    .filter(v -> v == 2)
+                    .count();
+
+            var largerVisits = smallCaveVisits.values().stream()
+                    .filter(v -> v > 2)
+                    .count();
+
+            var startVisits = smallCaveVisits.get(START);
+            var endVisits = smallCaveVisits.getOrDefault(END, 1);
+
+            return startVisits == 1 && endVisits == 1 && twiceVisits <= 1 && largerVisits == 0;
         }
     }
 }
