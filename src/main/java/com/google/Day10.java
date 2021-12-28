@@ -3,9 +3,12 @@ package com.google;
 import com.google.util.ReadFileUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Stack;
+
+import static java.util.function.Predicate.not;
 
 public class Day10 {
 
@@ -16,24 +19,39 @@ public class Day10 {
 
         var lines = ReadFileUtil.readLinesFrom(file);
 
-        var illegalCharacters = lines.stream()
-                .map(Day10::getIllegalCharacter)
+        var incompleteLines = lines.stream()
+                .filter(not(l -> buildWithError(l).getValue()))
                 .toList();
 
-        var sum = illegalCharacters.stream()
-                .filter(Objects::nonNull)
-                .map(c -> switch (c) {
-                    case ')' -> 3;
-                    case ']' -> 57;
-                    case '}' -> 1197;
-                    case '>' -> 25137;
-                    default -> 0;
-                })
-                .reduce(0, Integer::sum);
-        System.out.println(sum);
+        var remainders = incompleteLines.stream()
+                .map(Day10::buildWithError)
+                .filter(not(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
+                .map(Day10::getRemaining)
+                .toList();
+
+        var scores = remainders.stream()
+                .map(Day10::calculateScore)
+                .sorted()
+                .toList();
+
+        var output = scores.get(scores.size() / 2);
+        System.out.println(output);
     }
 
-    private static Character getIllegalCharacter(String line) {
+    private static Long calculateScore(List<Character> characters) {
+        return characters.stream()
+                .map(c -> switch (c) {
+                    case ')' -> 1L;
+                    case ']' -> 2L;
+                    case '}' -> 3L;
+                    case '>' -> 4L;
+                    default -> 0L;
+                })
+                .reduce(0L, (v1, v2) -> v1 * 5L + v2);
+    }
+
+    private static Map.Entry<Stack<Character>, Boolean> buildWithError(String line) {
         var stack = new Stack<Character>();
 
         var chars = line.toCharArray();
@@ -41,14 +59,24 @@ public class Day10 {
             var expected = getExpectedCharacter(stack);
             if (OPENING_CHARS.contains(c)) {
                 stack.push(c);
-            } else if (c == expected) {
+            } else if (expected != null && c == expected) {
                 stack.pop();
             } else {
-                return c;
+                return Map.entry(stack, true);
             }
         }
 
-        return null;
+        return Map.entry(stack, false);
+    }
+
+    private static List<Character> getRemaining(Stack<Character> s) {
+        List<Character> closing = new ArrayList<>();
+        while (!s.isEmpty()) {
+            var next = s.pop();
+            var c = getClosingCharacter(next);
+            closing.add(c);
+        }
+        return closing;
     }
 
     private static Character getExpectedCharacter(Stack<Character> s) {
@@ -56,7 +84,14 @@ public class Day10 {
             return null;
         }
         var character = s.peek();
-        return switch (character) {
+        return getClosingCharacter(character);
+    }
+
+    private static Character getClosingCharacter(Character c) {
+        if (c == null) {
+            return null;
+        }
+        return switch (c) {
             case '(' -> ')';
             case '[' -> ']';
             case '{' -> '}';
